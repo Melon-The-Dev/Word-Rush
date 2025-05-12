@@ -1,0 +1,7 @@
+[gd_scene load_steps=2 format=3 uid="uid://bm66rna1niyl1"]
+
+[ext_resource type="Script" uid="uid://ogn36hhjtski" path="res://scripts/tile_shadow.gd" id="1_axrjg"]
+
+[node name="TileShadow" type="Sprite2D"]
+modulate = Color(0.337255, 0.337255, 0.337255, 0.619608)
+script = ExtResource("1_axrjg")

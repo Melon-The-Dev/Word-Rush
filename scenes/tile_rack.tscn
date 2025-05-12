@@ -1,0 +1,8 @@
+[gd_scene load_steps=3 format=3 uid="uid://b3hrnjt6122ad"]
+
+[ext_resource type="Script" uid="uid://rjt4g2cbapw5" path="res://scripts/tile_rack.gd" id="1_6mq2k"]
+[ext_resource type="PackedScene" uid="uid://cwliivc58hwkk" path="res://scenes/tiles.tscn" id="2_qdt82"]
+
+[node name="tile rack" type="Node2D"]
+script = ExtResource("1_6mq2k")
+tile_scene = ExtResource("2_qdt82")
