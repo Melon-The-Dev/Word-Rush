@@ -7,9 +7,10 @@
 [node name="Tiles" type="Sprite2D"]
 clip_children = 1
 z_index = 1
-scale = Vector2(0.21, 0.21)
+scale = Vector2(0.25, 0.25)
 texture = ExtResource("1_od8sr")
 script = ExtResource("1_1g8qg")
+grid_size = 64
 letter = 6
 
 [node name="Letter" type="Sprite2D" parent="."]

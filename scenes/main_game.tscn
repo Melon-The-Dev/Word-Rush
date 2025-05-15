@@ -1,13 +1,22 @@
-[gd_scene load_steps=4 format=3 uid="uid://cjfq3aav44qlq"]
+[gd_scene load_steps=7 format=3 uid="uid://cjfq3aav44qlq"]
 
 [ext_resource type="Script" uid="uid://ctu6uwki15kb4" path="res://scripts/main_game.gd" id="1_d2op2"]
 [ext_resource type="Script" uid="uid://d2yxxdkqpq7hh" path="res://scripts/camera_2d.gd" id="1_s3esy"]
+[ext_resource type="Texture2D" uid="uid://dpeivj4r8yte8" path="res://assets/BGs/checkered_bg_bw.png" id="3_0rdsr"]
 [ext_resource type="PackedScene" uid="uid://b3hrnjt6122ad" path="res://scenes/tile_rack.tscn" id="4_0rdsr"]
+[ext_resource type="Texture2D" uid="uid://h432pbm20mcs" path="res://assets/BGs/star.png" id="4_ipu61"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_0rdsr"]
+font_size = 27
+font_color = Color(0, 0, 0, 1)
+outline_size = 5
+outline_color = Color(0, 1, 0.203125, 1)
 
 [node name="MainGame" type="Node2D"]
 script = ExtResource("1_d2op2")
 
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
+layer = 0
 
 [node name="Control" type="Control" parent="CanvasLayer"]
 layout_mode = 3
@@ -16,9 +25,10 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+mouse_filter = 1
 
-[node name="ColorRect" type="ColorRect" parent="CanvasLayer/Control"]
-custom_minimum_size = Vector2(0, 72)
+[node name="ColorRect" type="ColorRect" parent="CanvasLayer/Control" groups=["rack_holder"]]
+custom_minimum_size = Vector2(0, 90)
 layout_mode = 1
 anchors_preset = 12
 anchor_top = 1.0
@@ -28,10 +38,60 @@ grow_horizontal = 2
 grow_vertical = 0
 color = Color(0.809896, 0.478865, 0.293165, 1)
 
+[node name="Label" type="Label" parent="CanvasLayer/Control"]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 137.0
+grow_horizontal = 2
+text = "asdadasdadasdad  adsasd"
+label_settings = SubResource("LabelSettings_0rdsr")
+autowrap_mode = 3
+
+[node name="Label2" type="Label" parent="CanvasLayer/Control"]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_left = 2.0
+offset_top = 113.0
+offset_right = 2.0
+offset_bottom = 250.0
+grow_horizontal = 2
+text = "asdadasdadasdad  adsasd"
+label_settings = SubResource("LabelSettings_0rdsr")
+autowrap_mode = 3
+
 [node name="tile rack" parent="CanvasLayer" groups=["rack"] instance=ExtResource("4_0rdsr")]
-y_position = 1115
+y_position = 1110
+tile_width = 64.0
+
+[node name="BG" type="Sprite2D" parent="."]
+visible = false
+texture_repeat = 2
+position = Vector2(32, 32)
+scale = Vector2(1.14, 1.14)
+texture = ExtResource("3_0rdsr")
+region_enabled = true
+region_rect = Rect2(0, 0, 56000, 56000)
+
+[node name="center" type="Sprite2D" parent="."]
+self_modulate = Color(0.672241, 1, 0.533854, 1)
+scale = Vector2(1.14, 1.14)
+texture = ExtResource("3_0rdsr")
+region_enabled = true
+region_rect = Rect2(56, 56, 56, 56)
+
+[node name="star" type="Sprite2D" parent="center"]
+texture_repeat = 2
+scale = Vector2(0.0745614, 0.0745614)
+texture = ExtResource("4_ipu61")
+region_rect = Rect2(0, 0, 56000, 56000)
 
 [node name="Camera2D" type="Camera2D" parent="."]
 script = ExtResource("1_s3esy")
 
 [node name="Tiles" type="Node2D" parent="."]
+unique_name_in_owner = true
+
+[node name="PlacedTiles" type="Node2D" parent="."]
+unique_name_in_owner = true

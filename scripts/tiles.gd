@@ -72,6 +72,7 @@ var tile_points = {
 var textures_path = "res://assets/tiles/PNG/"
 var color = "Brown"
 var update_tiles = false
+var letter_string = "a"
 
 #Dragging
 var dragging := false
@@ -81,7 +82,7 @@ var from_rack = true
 #rack
 var rack : Node
 var pos_in_rack : Vector2
-
+var rack_holder : Node
 #map
 var map_pos
 
@@ -90,8 +91,10 @@ const TILE_SHADOW = preload("res://scenes/tile_shadow.tscn")
 func _ready() -> void:
 	if !Engine.is_editor_hint(): set_letter_texture()
 	rack = get_tree().get_first_node_in_group("rack")
+	rack_holder = get_tree().get_first_node_in_group("rack_holder")
 	update_tiles = true
 	pos_in_rack = position
+	letter_string = LETTERS.keys()[letter]
 
 func set_letter_texture():
 	letter_sprite.texture = load(textures_path + color + "/" + "letter_" + LETTERS.keys()[letter] + ".png")
@@ -102,6 +105,7 @@ func _input(event):
 		if event.button_index == MOUSE_BUTTON_LEFT:
 			if event.pressed and get_global_mouse_position().distance_to(global_position) < grid_size / 2:
 				dragging = true
+				scale = Vector2(0.25,0.25)
 				var ts = TILE_SHADOW.instantiate()
 				add_child(ts)
 				tile_offset = global_position - get_global_mouse_position()
@@ -110,22 +114,27 @@ func _input(event):
 			elif not event.pressed and dragging:
 				dragging = false
 				from_rack = true
+				map_pos = round(global_position / grid_size)
 				get_child(1).free()
-				if event.position.y >= rack.y_position-(grid_size/2) and event.position.y <= rack.y_position+(grid_size/2):
+				if rack_holder.get_global_rect().has_point(event.position):
 					reparent(rack)
-					position = pos_in_rack
-					remove_from_map()
+					#remove_from_map()
+					update_map()
 					return
 				_snap_to_grid()
-				add_to_map()
+				#add_to_map()
+				update_map()
 
-func add_to_map():
-	if map_pos: remove_from_map()
-	get_tree().current_scene.add_tile_in_map(round(global_position / grid_size), LETTERS.keys()[letter])
-	map_pos = round(global_position / grid_size)
+func update_map():
+	get_tree().current_scene.update_map()
 
-func remove_from_map():
-	get_tree().current_scene.remove_tile_in_map(map_pos)
+#func add_to_map():
+	#if map_pos: remove_from_map()
+	#get_tree().current_scene.add_tile_in_map(round(global_position / grid_size), LETTERS.keys()[letter])
+	#map_pos = round(global_position / grid_size)
+#
+#func remove_from_map():
+	#get_tree().current_scene.remove_tile_in_map(map_pos)
 
 func _process(delta):
 	if dragging:

@@ -2,7 +2,7 @@ extends Camera2D
 
 # Zoom limits
 var min_zoom = Vector2(0.25, 0.25)
-var max_zoom = Vector2(1, 1)
+var max_zoom = Vector2(2, 2)
 
 # Dragging support
 var dragging = false
@@ -34,9 +34,9 @@ func _unhandled_input(event):
 		zoom = (zoom * zoom_factor).clamped(min_zoom, max_zoom)
 
 	elif event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_WHEEL_UP:
-		zoom = (zoom * 0.9).clamp(min_zoom, max_zoom)
+		zoom = (zoom * 1.05).clamp(min_zoom, max_zoom)
 	elif event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_WHEEL_DOWN:
-		zoom = (zoom * 1.1).clamp(min_zoom, max_zoom)
+		zoom = (zoom * 0.95).clamp(min_zoom, max_zoom)
 
 func _process(delta):
 	# Smooth camera follow to the target position (auto-focus)

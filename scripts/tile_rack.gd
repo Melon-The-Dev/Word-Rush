@@ -7,49 +7,74 @@ extends Node2D
 
 @export var tile_scene: PackedScene  # assign your tile scene in the editor
 @export var y_position := 648  # vertical position of the rack on screen
-@export var spacing := 8.0  # minimum space between tiles
+@export var spacing := 8.0  # constant space between tiles
 
-@export var left_margin := 20  # Left margin in pixels
-@export var right_margin := 20  # Right margin in pixels
-@export var bottom_margin := 20  # Bottom margin in pixels
+@export var left_margin := 20
+@export var right_margin := 20
+@export var bottom_margin := 20
+
+@export var tile_width := 0.0
+var tile_count = easy_count
 
 func _ready():
+	# Determine tile width once
+	if tile_scene:
+		var temp_tile := tile_scene.instantiate()
+		tile_width = 51 if difficulty == "easy" else 64
+		temp_tile.queue_free()
+	var base_resolution := Vector2(648, 1152)
+	var current_resolution := get_viewport().get_visible_rect().size
+	var scale_ratio := current_resolution / base_resolution
+	y_position = y_position*scale_ratio.y
+	calculate_spacing_for_difficulty()
 	create_rack()
+	connect("child_entered_tree", Callable(self, "_on_child_updated"))
+	connect("child_exiting_tree", Callable(self, "_on_child_updated"))
 
-func create_rack():
-	var tile_count = easy_count
+func calculate_spacing_for_difficulty():
+	var screen_width := get_viewport().get_visible_rect().size.x
 	match difficulty:
 		"easy": tile_count = easy_count
 		"medium": tile_count = medium_count
 		"hard": tile_count = hard_count
-	
-	var screen_width := get_viewport_rect().size.x
-	print(screen_width)
-	# Estimate tile size (you could also use a known size)
-	var temp_tile = tile_scene.instantiate()
-	var tile_width = temp_tile.get_rect().size.x*temp_tile.scale.x
-	temp_tile.queue_free()
-	
-	var total_tiles_width = tile_count * tile_width
-	
-	# Calculate the available space after accounting for margins
+
 	var available_width := screen_width - left_margin - right_margin
-	
-	# Calculate the remaining space to distribute as spacing between tiles
-	var total_spacing = available_width - total_tiles_width
-	var spacing = total_spacing / (tile_count - 1)
-	
-	# Make sure the spacing doesn't go below a minimum value (to avoid tiles being too close)
-	spacing = max(spacing, 8)  # Minimum spacing of 8 pixels
-	
-	# Calculate the starting position so the rack is centered (with margins)
-	var start_x = (left_margin + (available_width - total_tiles_width - (tile_count - 1) * spacing) / 2) + (tile_width/2)
-	
-	# Create and position the tiles
+	var total_tiles_width = tile_count * tile_width
+
+	if tile_count > 1:
+		var total_spacing_available = available_width - total_tiles_width
+		spacing = max(total_spacing_available / (tile_count - 1), 8.0)
+	else:
+		spacing = 8.0  # fallback for 1 or fewer tiles
+
+func create_rack():
+	match difficulty:
+		"easy": tile_count = easy_count
+		"medium": tile_count = medium_count
+		"hard": tile_count = hard_count
+
 	for i in range(tile_count):
-		var tile := tile_scene.instantiate()
-		#print(tile.LETTERS.keys().pick_random())
-		tile.letter = tile.LETTERS.values().pick_random()
-		var x = start_x + i * (tile_width + spacing)
-		tile.position = Vector2(x, y_position)
-		add_child(tile)
+		add_tile()
+
+func add_tile():
+	if not tile_scene:
+		return
+	var tile := tile_scene.instantiate()
+	tile.letter = tile.LETTERS.values().pick_random()
+	add_child(tile)
+	arrange_tiles()
+
+func _on_child_updated(child: Node) -> void:
+	# Delay to ensure child removal/addition completes before arranging
+	await get_tree().process_frame
+	arrange_tiles()
+
+func arrange_tiles():
+	var tiles := get_children().filter(func(n): return n.has_method("get_rect"))
+	if tiles.is_empty() or tile_width == 0:
+		return
+	var start_x := left_margin + tile_width / 2
+	for i in range(tiles.size()):
+		tiles[i].scale = Vector2(0.2,0.2)
+		var x := start_x + i * (tile_width + spacing)
+		tiles[i].position = Vector2(x, y_position)
